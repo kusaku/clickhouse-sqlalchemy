@@ -176,10 +176,10 @@ class AsyncAdapt_asynch_connection(AdaptedConnection):
         return AsyncAdapt_asynch_cursor(self)
 
     def rollback(self):
-        self.await_(self._connection.rollback())
+        pass
 
     def commit(self):
-        self.await_(self._connection.commit())
+        pass
 
     def close(self):
         self.await_(self._connection.close())
