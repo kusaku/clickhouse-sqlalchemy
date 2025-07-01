@@ -146,7 +146,7 @@ class AsyncAdapt_asynch_dbapi:
     def connect(self, *args, **kwargs) -> 'AsyncAdapt_asynch_connection':
         return AsyncAdapt_asynch_connection(
             self,
-            await_only(self.asynch.connect(*args, **kwargs))
+            self.asynch.connection.Connection(*args, **kwargs)
         )
 
 
