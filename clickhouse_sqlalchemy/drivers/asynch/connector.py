@@ -107,6 +107,18 @@ class AsyncAdapt_asynch_cursor:
         self._rows[:] = []
         return retval
 
+    async def _async_soft_close(self) -> None:
+        """Soft close the cursor without raising exceptions.
+        
+        This method is required by SQLAlchemy 2.0.44+ for proper
+        async cursor cleanup. It should not raise exceptions and
+        should be safe to call multiple times.
+        
+        For most drivers, this is a no-op as the actual cleanup
+        is handled by the regular close() method.
+        """
+        return
+
 
 class AsyncAdapt_asynch_dbapi:
     def __init__(self, asynch):
