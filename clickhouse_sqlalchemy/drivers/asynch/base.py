@@ -4,10 +4,37 @@ from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.pool import AsyncAdaptedQueuePool
 
 from .connector import AsyncAdapt_asynch_dbapi
-from ..native.base import ClickHouseDialect_native, ClickHouseExecutionContext
+from ..native.base import ClickHouseDialect_native, ClickHouseExecutionContext, ClickHouseNativeSQLCompiler
 
 # Export connector version
 VERSION = (0, 0, 1, None)
+
+
+class ClickHouseAsynchSQLCompiler(ClickHouseNativeSQLCompiler):
+    """
+    Custom SQL compiler for asynch driver that generates {name} format
+    instead of %(name)s to match asynch 0.3.1+ parameter substitution.
+    """
+    def visit_bindparam(self, bindparam, **kw):
+        """
+        Override visit_bindparam to generate {name} format for asynch 0.3.1+.
+        
+        asynch 0.3.1+ uses Python's .format() method which expects {name} format,
+        not the standard DBAPI pyformat style %(name)s.
+        """
+        name = self._truncate_bindparam(bindparam)
+        return "{%s}" % name
+
+    def post_process_text(self, text):
+        """
+        Override post_process_text to NOT escape % characters.
+        
+        The base class escapes % to %% for % formatting compatibility,
+        but asynch 0.3.1+ uses .format() which doesn't need this escaping.
+        Escaping % would break data containing % characters.
+        """
+        # Don't escape % characters - asynch uses .format() not % formatting
+        return text
 
 
 class ClickHouseAsynchExecutionContext(ClickHouseExecutionContext):
@@ -18,6 +45,7 @@ class ClickHouseAsynchExecutionContext(ClickHouseExecutionContext):
 class ClickHouseDialect_asynch(ClickHouseDialect_native):
     driver = 'asynch'
     execution_ctx_cls = ClickHouseAsynchExecutionContext
+    statement_compiler = ClickHouseAsynchSQLCompiler
 
     is_async = True
     supports_statement_cache = True
