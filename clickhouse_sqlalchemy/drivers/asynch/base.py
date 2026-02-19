@@ -4,10 +4,34 @@ from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.pool import AsyncAdaptedQueuePool
 
 from .connector import AsyncAdapt_asynch_dbapi
-from ..native.base import ClickHouseDialect_native, ClickHouseExecutionContext
+from ..native.base import (
+    ClickHouseDialect_native,
+    ClickHouseExecutionContext,
+    ClickHouseNativeSQLCompiler,
+)
 
 # Export connector version
 VERSION = (0, 0, 1, None)
+
+
+try:
+    from importlib.metadata import version
+    _asynch_version_raw = version('asynch')
+except Exception:
+    _asynch_version_raw = getattr(asynch, '__version__', None) or '0'
+_asynch_use_format_placeholders = tuple(
+    int(x) if x.isdigit() else 0 for x in str(_asynch_version_raw).split('.')[:3]
+) >= (0, 3, 1)
+
+
+class ClickHouseAsynchSQLCompiler(ClickHouseNativeSQLCompiler):
+    """Emit {name} for asynch 0.3.1+ (.format() param style)."""
+
+    def visit_bindparam(self, bindparam, **kw):
+        return "{%s}" % self._truncate_bindparam(bindparam)
+
+    def post_process_text(self, text):
+        return text
 
 
 class ClickHouseAsynchExecutionContext(ClickHouseExecutionContext):
@@ -18,6 +42,10 @@ class ClickHouseAsynchExecutionContext(ClickHouseExecutionContext):
 class ClickHouseDialect_asynch(ClickHouseDialect_native):
     driver = 'asynch'
     execution_ctx_cls = ClickHouseAsynchExecutionContext
+    statement_compiler = (
+        ClickHouseAsynchSQLCompiler if _asynch_use_format_placeholders
+        else ClickHouseNativeSQLCompiler
+    )
 
     is_async = True
     supports_statement_cache = True
