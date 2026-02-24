@@ -16,11 +16,12 @@ VERSION = (0, 0, 1, None)
 
 try:
     from importlib.metadata import version
-    _asynch_version_raw = version('asynch')
+    _asynch_version = version('asynch')
 except Exception:
-    _asynch_version_raw = getattr(asynch, '__version__', None) or '0'
-_asynch_use_format_placeholders = tuple(
-    int(x) if x.isdigit() else 0 for x in str(_asynch_version_raw).split('.')[:3]
+    _asynch_version = getattr(asynch, '__version__', None) or '0'
+
+_asynch_031 = tuple(
+    int(x) if x.isdigit() else 0 for x in str(_asynch_version).split('.')[:3]
 ) >= (0, 3, 1)
 
 
@@ -43,8 +44,9 @@ class ClickHouseDialect_asynch(ClickHouseDialect_native):
     driver = 'asynch'
     execution_ctx_cls = ClickHouseAsynchExecutionContext
     statement_compiler = (
-        ClickHouseAsynchSQLCompiler if _asynch_use_format_placeholders
-        else ClickHouseNativeSQLCompiler
+        ClickHouseAsynchSQLCompiler
+        if _asynch_031 else
+        ClickHouseNativeSQLCompiler
     )
 
     is_async = True
