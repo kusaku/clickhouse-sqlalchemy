@@ -1,23 +1,33 @@
 on: [push, pull_request]
-name: "SQLAlchemy 2.0 supported versions"
+name: "SQLAlchemy 2.0.x (sparse)"
 jobs:
   tests:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
+      # Sparse matrix: SQLAlchemy 2.0.x releases with breaking/behavior-changing changes (per changelog)
       matrix:
-        python-version:
-          - "3.12"
-        clickhouse-version:
-          - 23.8.4.69
+        python-version: ["3.12"]
+        sa-version:
+          - "2.0.0"   # first 2.0
+          - "2.0.11"  # bytes handler removed, Row serialization changed
+          - "2.0.18"  # regexp_match/regexp_replace flags backwards-incompatible
+          - "2.0.19"  # Row.t/tuple -> _t/_tuple
+          - "2.0.23"  # compare_against_backend removed (Alembic)
+          - "2.0.24"  # URL quoting, async_fallback deprecated
+          - "2.0.25"  # post-2.0.24 fixes
+          - "2.0.37"  # PEP 695 TypeAliasType in type map (revised in 2.0.44)
+          - "2.0.41"  # __getattr__ removed from sqlalchemy/__init__
+          - "2.0.44"  # revises 2.0.37 type alias behavior
+          - "2.0.48"  # latest
     services:
       clickhouse-server:
-        image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}
+        image: clickhouse/clickhouse-server:23.8.4.69
         ports:
           - 8123:8123
           - 9000:9000
 
-    name: ${{ matrix.python-version }} SA=max-supported
+    name: py${{ matrix.python-version }} SA=${{ matrix.sa-version }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -33,7 +43,7 @@ jobs:
           # Limit each test time execution.
           pip install pytest-timeout
       - name: Install SQLAlchemy
-        run: pip install --upgrade "sqlalchemy>=2.0.0,<2.0.44"
+        run: pip install sqlalchemy==${{ matrix.sa-version }}
       - name: Run tests
-        run: pytest --maxfail=1 --timeout=10 -v
+        run: pytest --timeout=10 -v -x
         timeout-minutes: 2
