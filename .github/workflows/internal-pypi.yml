@@ -1,0 +1,81 @@
+name: Internal PyPI Release
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYPI_SSH_KEY: ${{ secrets.PYPI_SSH_KEY }}
+
+jobs:
+  release-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        uses: mathieudutour/github-tag-action@v6.2
+        id: tag_version
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+          tag_prefix: ""
+
+      - name: Create a GitHub release
+        if: steps.tag_version.outcome == 'success'
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          makeLatest: true
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+
+      - name: Install SSH key
+        if: env.PYPI_SSH_KEY
+        uses: shimataro/ssh-key-action@v2.7.0
+        with:
+          key: ${{ secrets.PYPI_SSH_KEY }}
+          known_hosts: |
+            automate-infra-1.adjust.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDW1dpQo0YbiBaM5bVagST5KN5HlCx0Zo6/tnNTYRQBX
+          config: |
+            Host *.adjust.com
+              User acquired
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Build wheel
+        if: steps.tag_version.outcome == 'success'
+        run: |
+          python - <<'PY'
+          import pathlib
+          import re
+
+          version = '${{ steps.tag_version.outputs.new_version }}'
+          version_tuple = ', '.join(version.split('.'))
+
+          init_file = pathlib.Path('clickhouse_sqlalchemy/__init__.py')
+          content = init_file.read_text(encoding='utf-8')
+          updated = re.sub(r'^VERSION\W*=\W*\([^\(\)]*\)', f'VERSION = ({version_tuple})', content, flags=re.M)
+
+          if content == updated:
+              raise SystemExit('VERSION tuple not found in clickhouse_sqlalchemy/__init__.py')
+
+          init_file.write_text(updated, encoding='utf-8')
+          PY
+
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+
+      - name: Upload wheel to internal PyPI
+        if: env.PYPI_SSH_KEY && steps.tag_version.outcome == 'success'
+        run: |
+          scp dist/*.whl automate-infra-1.adjust.com:~/pypi/wheels
