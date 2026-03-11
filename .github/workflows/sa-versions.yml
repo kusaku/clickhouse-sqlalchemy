@@ -35,5 +35,5 @@ jobs:
       - name: Install SQLAlchemy
         run: pip install --upgrade "sqlalchemy>=2.0.0,<2.0.44"
       - name: Run tests
-        run: pytest --timeout=10 -v
+        run: pytest --maxfail=1 --timeout=10 -v
         timeout-minutes: 2

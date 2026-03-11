@@ -42,7 +42,7 @@ jobs:
       - name: Run flake8
         run: flake8
       - name: Run tests
-        run: coverage run --source=clickhouse_sqlalchemy -m pytest --timeout=10 -v
+        run: coverage run --source=clickhouse_sqlalchemy -m pytest --maxfail=1 --timeout=10 -v
         timeout-minutes: 2
       - name: Install coveralls
         run: |
