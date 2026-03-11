@@ -1,8 +1,24 @@
 import asyncio
 
-from sqlalchemy.connectors.asyncio import AsyncAdapt_dbapi_cursor
 from sqlalchemy.engine.interfaces import AdaptedConnection
 from sqlalchemy.util.concurrency import await_only
+
+try:
+    from sqlalchemy.connectors.asyncio import AsyncAdapt_dbapi_cursor
+except ImportError:
+    class AsyncAdapt_dbapi_cursor:
+        __slots__ = (
+            '_adapt_connection',
+            '_connection',
+            'await_',
+            '_cursor',
+            '_rows'
+        )
+
+        def __init__(self, adapt_connection):
+            self._adapt_connection = adapt_connection
+            self._connection = adapt_connection._connection  # noqa
+            self.await_ = adapt_connection.await_
 
 
 class AsyncAdapt_asynch_cursor(AsyncAdapt_dbapi_cursor):
