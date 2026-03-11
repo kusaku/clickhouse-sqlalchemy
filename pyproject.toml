@@ -33,6 +33,7 @@ Changelog = "https://github.com/adjust/clickhouse-sqlalchemy/blob/main/CHANGELOG
 enable = true
 vcs = "git"
 style = "semver"
+pattern = "default-unprefixed"
 
 [build-system]
 requires = [
