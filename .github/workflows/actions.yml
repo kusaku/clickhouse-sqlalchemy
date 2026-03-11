@@ -12,18 +12,11 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
-        include:
-          - clickhouse-version: 18.14.9
-            clickhouse-org: yandex
-          - clickhouse-version: 19.3.5
-            clickhouse-org: yandex
-          - clickhouse-version: 22.5.1.2079
-            clickhouse-org: clickhouse
-          - clickhouse-version: 23.8.4.69
-            clickhouse-org: clickhouse
+        clickhouse-version:
+          - "26.1.1.912"
     services:
       clickhouse-server:
-        image: ${{ matrix.clickhouse-org }}/clickhouse-server:${{ matrix.clickhouse-version }}
+        image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}
         ports:
           - 8123:8123
           - 9000:9000
