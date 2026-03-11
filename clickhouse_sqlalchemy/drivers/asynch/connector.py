@@ -107,9 +107,6 @@ class AsyncAdapt_asynch_cursor:
         self._rows[:] = []
         return retval
 
-    async def _async_soft_close(self) -> None:
-        return
-
 
 class AsyncAdapt_asynch_dbapi:
     def __init__(self, asynch):
@@ -179,10 +176,10 @@ class AsyncAdapt_asynch_connection(AdaptedConnection):
         return AsyncAdapt_asynch_cursor(self)
 
     def rollback(self):
-        pass
+        self.await_(self._connection.rollback())
 
     def commit(self):
-        pass
+        self.await_(self._connection.commit())
 
     def close(self):
         self.await_(self._connection.close())
