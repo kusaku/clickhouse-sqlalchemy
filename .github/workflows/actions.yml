@@ -49,9 +49,6 @@ jobs:
       - name: Run tests
         run: coverage run --source=clickhouse_sqlalchemy -m pytest --timeout=10 -v -x
         timeout-minutes: 2
-        env:
-          CLICKHOUSE_USER: default
-          CLICKHOUSE_PASSWORD: secret
       - name: Install coveralls
         run: |
           # Newer coveralls do not work with github actions.

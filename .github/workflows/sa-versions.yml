@@ -51,6 +51,3 @@ jobs:
       - name: Run tests
         run: pytest --timeout=10 -v -x
         timeout-minutes: 2
-        env:
-          CLICKHOUSE_USER: default
-          CLICKHOUSE_PASSWORD: secret
