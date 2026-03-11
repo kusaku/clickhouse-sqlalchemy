@@ -25,7 +25,8 @@ jobs:
       clickhouse-server:
         image: clickhouse/clickhouse-server:26.2.4.23
         env:
-          CLICKHOUSE_SKIP_USER_SETUP: 1
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: secret
         ports:
           - 8123:8123
           - 9000:9000
@@ -50,3 +51,6 @@ jobs:
       - name: Run tests
         run: pytest --timeout=10 -v -x
         timeout-minutes: 2
+        env:
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: secret

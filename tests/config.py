@@ -1,4 +1,5 @@
 import configparser
+import os
 
 from sqlalchemy.dialects import registry
 
@@ -24,8 +25,8 @@ host = file_config.get('db', 'host')
 port = file_config.getint('db', 'port')
 http_port = file_config.getint('db', 'http_port')
 database = file_config.get('db', 'database')
-user = file_config.get('db', 'user')
-password = file_config.get('db', 'password')
+user = os.getenv('CLICKHOUSE_USER', file_config.get('db', 'user'))
+password = os.getenv('CLICKHOUSE_PASSWORD', file_config.get('db', 'password'))
 
 uri_template = '{schema}://{user}:{password}@{host}:{port}/{database}'
 
