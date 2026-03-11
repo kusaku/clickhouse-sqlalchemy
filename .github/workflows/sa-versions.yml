@@ -22,7 +22,7 @@ jobs:
           - "2.0.48"  # latest
     services:
       clickhouse-server:
-        image: clickhouse/clickhouse-server:23.8.4.69
+        image: clickhouse/clickhouse-server:26.1.1.912
         ports:
           - 8123:8123
           - 9000:9000
