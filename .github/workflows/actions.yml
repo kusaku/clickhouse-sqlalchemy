@@ -18,6 +18,8 @@ jobs:
     services:
       clickhouse-server:
         image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}
+        env:
+          CLICKHOUSE_SKIP_USER_SETUP: 1
         ports:
           - 8123:8123
           - 9000:9000
