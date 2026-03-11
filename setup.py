@@ -99,7 +99,8 @@ setup(
         'sqlalchemy>=2.0.0,<2.1.0',
         'requests',
         'clickhouse-driver',
-        'asynch',
+        'asynch<0.2.5; python_version < "3.9"',
+        'asynch; python_version >= "3.9"',
     ],
     # Registering `clickhouse` as dialect.
     entry_points={
