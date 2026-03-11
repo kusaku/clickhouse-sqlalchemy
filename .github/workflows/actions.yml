@@ -6,11 +6,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
           - "3.12"
         include:
           - clickhouse-version: 18.14.9
@@ -49,12 +44,6 @@ jobs:
       - name: Run tests
         run: coverage run --source=clickhouse_sqlalchemy -m pytest --timeout=10 -v
         timeout-minutes: 2
-      - name: Set up Python for coverage submission
-        if: ${{ matrix.python-version == '2.7' }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.8
-          architecture: x64
       - name: Install coveralls
         run: |
           # Newer coveralls do not work with github actions.
