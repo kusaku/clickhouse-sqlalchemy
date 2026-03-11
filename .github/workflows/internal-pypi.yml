@@ -36,9 +36,7 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
 
   build:
-    uses: adjust/githubWorkflows/.github/workflows/automateBuildPushWheel.yml@v8.1.6
+    uses: adjust/githubWorkflows/.github/workflows/automateBuildPushWheel.yml@v8.1.15
     needs: [release]
     with:
       python_version: 3.12
-    secrets:
-      PYPI_SSH_KEY: ${{ secrets.PYPI_SSH_KEY }}
