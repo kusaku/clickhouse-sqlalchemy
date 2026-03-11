@@ -1,5 +1,5 @@
 on: [push, pull_request]
-name: "SQLAlchemy >=2.0.0 versions"
+name: "SQLAlchemy 2.0 supported versions"
 jobs:
   tests:
     runs-on: ubuntu-22.04
@@ -17,7 +17,7 @@ jobs:
           - 8123:8123
           - 9000:9000
 
-    name: ${{ matrix.python-version }} SA=latest
+    name: ${{ matrix.python-version }} SA=max-supported
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -33,7 +33,7 @@ jobs:
           # Limit each test time execution.
           pip install pytest-timeout
       - name: Install SQLAlchemy
-        run: pip install --upgrade "sqlalchemy>=2.0.0,<2.1.0"
+        run: pip install --upgrade "sqlalchemy>=2.0.0,<2.0.44"
       - name: Run tests
         run: pytest --timeout=10 -v
         timeout-minutes: 2
