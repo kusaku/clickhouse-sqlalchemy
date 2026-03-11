@@ -2,10 +2,9 @@
 tests_require = [
     'pytest',
     'pytest-asyncio',
-    'sqlalchemy>=2.0.0,<2.0.44',
+    'sqlalchemy>=2.0.0,<2.1.0',
     'greenlet>=2.0.1',
-    'alembic<1.15',
-    'asynch>=0.2.5,<0.3.0',
+    'alembic',
     'requests',
     'responses',
     'parameterized'

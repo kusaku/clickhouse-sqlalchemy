@@ -12,11 +12,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4"
-sqlalchemy = ">=2.0.0,<2.0.44"
+python = ">=3.8,<4"
+sqlalchemy = ">=2.0.0,<2.1.0"
 requests = "*"
-clickhouse-driver = ">=0.1.2"
-asynch = ">=0.2.5,<0.3.0"
+clickhouse-driver = "*"
+asynch = "*"
 
 [tool.poetry.plugins."sqlalchemy.dialects"]
 clickhouse = "clickhouse_sqlalchemy.drivers.http.base:ClickHouseDialect_http"
