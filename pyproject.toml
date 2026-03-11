@@ -27,7 +27,7 @@ clickhouse = "clickhouse_sqlalchemy.drivers.http.base:ClickHouseDialect_http"
 [tool.poetry.urls]
 Documentation = "https://clickhouse-sqlalchemy.readthedocs.io"
 Repository = "https://github.com/adjust/clickhouse-sqlalchemy"
-Changelog = "https://github.com/adjust/clickhouse-sqlalchemy/blob/master/CHANGELOG.md"
+Changelog = "https://github.com/adjust/clickhouse-sqlalchemy/blob/main/CHANGELOG.md"
 
 [tool.poetry-dynamic-versioning]
 enable = true
