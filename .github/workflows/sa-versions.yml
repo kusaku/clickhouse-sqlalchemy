@@ -1,4 +1,4 @@
-on: [push, pull_request]
+on: [pull_request]
 name: "SQLAlchemy 2.0.x (sparse)"
 jobs:
   tests:
