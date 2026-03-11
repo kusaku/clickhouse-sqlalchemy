@@ -7,7 +7,7 @@ jobs:
       fail-fast: false
       # Sparse matrix: SQLAlchemy 2.0.x releases with breaking/behavior-changing changes (per changelog)
       matrix:
-        python-version: ["3.12"]
+        python-version: ["3.14"]
         sa-version:
           - "2.0.0"   # first 2.0
           - "2.0.11"  # bytes handler removed, Row serialization changed
@@ -22,7 +22,7 @@ jobs:
           - "2.0.48"  # latest
     services:
       clickhouse-server:
-        image: clickhouse/clickhouse-server:26.1.1.912
+        image: clickhouse/clickhouse-server:26.2.4.23
         ports:
           - 8123:8123
           - 9000:9000
