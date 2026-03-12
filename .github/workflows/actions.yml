@@ -1,4 +1,7 @@
-on: [pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
 name: build
 
 jobs:
@@ -15,7 +18,7 @@ jobs:
           - "3.13"
           - "3.14"
         clickhouse-version:
-          - 26.2.4.23
+          - "26.2.4.23"
     services:
       clickhouse-server:
         image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}

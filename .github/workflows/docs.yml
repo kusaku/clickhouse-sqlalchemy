@@ -1,4 +1,7 @@
-on: [pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
 name: build-docs
 
 jobs:
@@ -10,7 +13,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: "3.12"
           architecture: x64
       - name: Update tools
         run: pip install --upgrade pip setuptools wheel

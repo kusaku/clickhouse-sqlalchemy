@@ -1,4 +1,7 @@
-on: [pull_request]
+on:
+  push:
+    branches: [master]
+  pull_request:
 name: "SQLAlchemy >=2.0.0 versions"
 
 jobs:
@@ -10,19 +13,19 @@ jobs:
         python-version:
           - "3.12"
         clickhouse-version:
-          - 26.2.4.23
+          - "26.2.4.23"
         sa-version:
-          - "2.0.0"
-          - "2.0.11"
-          - "2.0.18"
-          - "2.0.19"
-          - "2.0.23"
-          - "2.0.24"
-          - "2.0.25"
-          - "2.0.37"
-          - "2.0.41"
-          - "2.0.44"
-          - "2.0.46"
+          - "2.0.0"   # first 2.0
+          - "2.0.11"  # bytes handler removed, Row serialization changed
+          - "2.0.18"  # regexp_match/regexp_replace flags backwards-incompatible
+          - "2.0.19"  # Row.t/tuple -> _t/_tuple
+          - "2.0.23"  # compare_against_backend removed (Alembic)
+          - "2.0.24"  # URL quoting, async_fallback deprecated
+          - "2.0.25"  # post-2.0.24 fixes
+          - "2.0.37"  # PEP 695 TypeAliasType in type map (revised in 2.0.44)
+          - "2.0.41"  # __getattr__ removed from sqlalchemy/__init__
+          - "2.0.44"  # revises 2.0.37 type alias behavior
+          - "2.0.46"  # latest
     services:
       clickhouse-server:
         image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}
