@@ -1,6 +1,28 @@
 on: [pull_request]
-name: build
+name: CI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    name: Lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          architecture: x64
+      - name: Install lint requirements
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install flake8 flake8-print
+      - name: Run flake8
+        run: flake8
+
   tests:
     runs-on: ubuntu-22.04
     strategy:
@@ -13,11 +35,9 @@ jobs:
           - "3.12"
           - "3.13"
           - "3.14"
-        clickhouse-version:
-          - "26.2.4.23"
     services:
       clickhouse-server:
-        image: clickhouse/clickhouse-server:${{ matrix.clickhouse-version }}
+        image: clickhouse/clickhouse-server:26.2.4.23
         env:
           CLICKHOUSE_USER: default
           CLICKHOUSE_PASSWORD: secret
@@ -25,7 +45,7 @@ jobs:
           - 8123:8123
           - 9000:9000
 
-    name: ${{ matrix.python-version }} CH=${{ matrix.clickhouse-version }}
+    name: py${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -35,38 +55,9 @@ jobs:
           architecture: x64
       - name: Install test requirements
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install flake8 flake8-print coverage
-          if [ "${{ matrix.python-version }}" = "3.8" ]; then
-            pip install backports.zoneinfo "asynch>=0.2.0,<0.3.0"
-          fi
+          python -m pip install --upgrade pip setuptools wheel
           python testsrequire.py
           python setup.py develop
-          # Limit each test time execution.
-          pip install pytest-timeout
-      - name: Run flake8
-        run: flake8
       - name: Run tests
-        run: coverage run --source=clickhouse_sqlalchemy -m pytest --timeout=10 -v -x
+        run: pytest --timeout=10 -v -x
         timeout-minutes: 2
-      - name: Install coveralls
-        run: |
-          # Newer coveralls do not work with github actions.
-          pip install 'coveralls<3.0.0'
-      - name: Upload coverage
-        run: coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_PARALLEL: true
-          COVERALLS_FLAG_NAME: ${{ matrix.python-version }} CH=${{ matrix.clickhouse-version }}
-
-  coveralls-finished:
-    name: Indicate completion to coveralls.io
-    needs: tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Finished
-        uses: coverallsapp/github-action@v2.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true

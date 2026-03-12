@@ -1,7 +1,12 @@
 
+import subprocess
+import sys
+
+
 tests_require = [
     'pytest',
     'pytest-asyncio',
+    'pytest-timeout',
     'sqlalchemy>=2.0.0,<2.1.0',
     'greenlet>=2.0.1',
     'alembic',
@@ -10,9 +15,4 @@ tests_require = [
     'parameterized'
 ]
 
-try:
-    from pip import main as pipmain
-except ImportError:
-    from pip._internal import main as pipmain
-
-pipmain(['install'] + tests_require)
+subprocess.check_call([sys.executable, '-m', 'pip', 'install'] + tests_require)
