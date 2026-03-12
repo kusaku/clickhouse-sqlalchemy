@@ -1,5 +1,5 @@
 on: [pull_request]
-name: "SQLAlchemy 2.0.x (sparse)"
+name: SQLAlchemy Compatibility
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
