@@ -13,7 +13,8 @@ jobs:
       # Sparse matrix: SQLAlchemy 2.0.x releases with breaking/behavior-changing changes (per changelog)
       matrix:
         # Early SQLAlchemy 2.0.x releases are not compatible with Python 3.14.
-        python-version: ["3.12"]
+        python-version:
+          - "3.12"
         sa-version:
           - "2.0.0"   # first 2.0
           - "2.0.11"  # bytes handler removed, Row serialization changed

@@ -59,5 +59,21 @@ jobs:
           python testsrequire.py
           python setup.py develop
       - name: Run tests
+        if: matrix.python-version != '3.14'
         run: pytest --timeout=10 -v -x
         timeout-minutes: 2
+      - name: Install coverage tools
+        if: matrix.python-version == '3.14'
+        run: |
+          python -m pip install coverage
+          # Newer coveralls do not work with github actions.
+          python -m pip install 'coveralls<3.0.0'
+      - name: Run tests with coverage
+        if: matrix.python-version == '3.14'
+        run: coverage run --source=clickhouse_sqlalchemy -m pytest --timeout=10 -v -x
+        timeout-minutes: 2
+      - name: Upload coverage
+        if: matrix.python-version == '3.14'
+        run: coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
